@@ -108,7 +108,7 @@ print(f'Valeurs manquantes : {df.isnull().sum().sum()}'); \
 	@echo "$(GREEN)[OK] Dataset valide$(RESET)"
 
 train: ## Entraîne la baseline LogReg -> models/model.joblib (C=.. MAX_ITER=..)
-	# TODO (S5) : $(PYTHON) -m src.train --c $(C) --max-iter $(MAX_ITER)
+	$(PYTHON) -m src.train --c $(C) --max-iter $(MAX_ITER)
 
 train-models: ## Compare RF / XGBoost / LightGBM (GridSearchCV) + SHAP (CV=.. SCORING=..)
 	# TODO (S7) : $(PYTHON) -m src.train_models --cv $(CV) --scoring $(SCORING)
