@@ -11,7 +11,7 @@ PYTHON       := uv run python
 RUN          := uv run
 VENV_DIR     := .venv
 DATA_RAW     := data/raw/students_dropout_academic_success.csv
-PYTHONPATH   ?= .
+PYTHONPATH   ?= $(CURDIR)
 export PYTHONPATH
 API_HOST     ?= 127.0.0.1
 API_PORT     ?= 8000
@@ -96,7 +96,7 @@ doctor: check-uv check-venv ## Diagnostique l'environnement de travail
 # ==============================================================================
 
 data: ## Inspecte et valide le dataset brut (data/raw/)
-	# TODO (S0) : compléter mlproject/config.py avec les colonnes du dataset
+	# TODO (S0) : compléter src/config.py avec les colonnes du dataset
 	@echo "$(YELLOW)>> Inspection du dataset...$(RESET)"
 	@$(PYTHON) -c "\
 import pandas as pd; \
@@ -108,19 +108,19 @@ print(f'Valeurs manquantes : {df.isnull().sum().sum()}'); \
 	@echo "$(GREEN)[OK] Dataset valide$(RESET)"
 
 train: ## Entraîne la baseline LogReg -> models/model.joblib (C=.. MAX_ITER=..)
-	# TODO (S5) : $(PYTHON) -m mlproject.train --c $(C) --max-iter $(MAX_ITER)
+	# TODO (S5) : $(PYTHON) -m src.train --c $(C) --max-iter $(MAX_ITER)
 
 train-models: ## Compare RF / XGBoost / LightGBM (GridSearchCV) + SHAP (CV=.. SCORING=..)
-	# TODO (S7) : $(PYTHON) -m mlproject.train_models --cv $(CV) --scoring $(SCORING)
+	# TODO (S7) : $(PYTHON) -m src.train_models --cv $(CV) --scoring $(SCORING)
 
 train-optuna: ## Optimise les hyperparamètres avec Optuna (N_TRIALS=.. CV=..)
-	# TODO (S6) : $(PYTHON) -m mlproject.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
+	# TODO (S6) : $(PYTHON) -m src.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
 
 mlflow: ## Démarre le serveur MLflow via Docker Compose (port 5000)
 	# TODO (S5) : docker compose -f docker-compose.yml up -d mlflow
 
 api: ## Lance l'API FastAPI en rechargement auto (API_HOST / API_PORT)
-	# TODO (S12) : $(RUN) uvicorn mlproject.api:app --reload --host $(API_HOST) --port $(API_PORT)
+	# TODO (S12) : $(RUN) uvicorn src.api:app --reload --host $(API_HOST) --port $(API_PORT)
 
 frontend: ## Lance le frontend Streamlit (FRONTEND_PORT / API_URL)
 	# TODO (S14bis) : $(RUN) streamlit run frontend/app.py --server.port $(FRONTEND_PORT)
@@ -131,10 +131,10 @@ frontend: ## Lance le frontend Streamlit (FRONTEND_PORT / API_URL)
 # ==============================================================================
 
 docker-build: ## Construit l'image d'entraînement
-	# TODO (S8) : docker build -f docker/Dockerfile.train -t mlproject-train .
+	# TODO (S8) : docker build -f docker/Dockerfile.train -t dropout-train .
 
 docker-run: ## Lance l'entraînement dans un conteneur
-	# TODO (S8) : docker run --rm -v "$(CURDIR)/models:/app/models" mlproject-train
+	# TODO (S8) : docker run --rm -v "$(CURDIR)/models:/app/models" dropout-train
 
 docker-up: ## Démarre la stack complète (mlflow, api, frontend)
 	# TODO (S14) : docker compose -f docker-compose.yml up -d --build mlflow api frontend
@@ -148,13 +148,13 @@ docker-down: ## Arrête et supprime les conteneurs (conserve les volumes)
 # ==============================================================================
 
 lint: ## Vérifie le style (ruff)
-	# TODO : $(RUN) ruff check mlproject
+	# TODO : $(RUN) ruff check src
 
 format: ## Formate le code (ruff)
-	# TODO : $(RUN) ruff format mlproject
+	# TODO : $(RUN) ruff format src
 
 type: ## Vérifie les types (mypy)
-	# TODO : $(RUN) mypy mlproject
+	# TODO : $(RUN) mypy src
 
 test: ## Lance les tests (pytest)
 	# TODO : $(RUN) pytest

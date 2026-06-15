@@ -96,7 +96,7 @@ orchestration5IABD/
   data/
     raw/
       students_dropout_academic_success.csv   dataset brut
-  mlproject/               package Python (config, data, train, api...)
+  src/                     package Python (config, data, train, api...)
   frontend/                application Streamlit
   docker/                  Dockerfiles
   docker-compose.yml       orchestration des services
