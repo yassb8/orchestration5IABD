@@ -80,3 +80,18 @@ RANDOM_STATE = 42
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT", "student-dropout")
 MODEL_NAME = os.getenv("MODEL_NAME", "dropout-classifier")
+
+# Seuils minimaux de validation (make evaluate)
+EVAL_ROC_AUC_MIN: float = float(os.getenv("EVAL_ROC_AUC_MIN", "0.80"))
+EVAL_F1_MIN: float = float(os.getenv("EVAL_F1_MIN", "0.70"))
+
+MLFLOW_EXPERIMENT_DESCRIPTION = (
+    "Prédiction de l'abandon scolaire (Dropout vs Graduate/Enrolled). "
+    "Comparaison RF / XGBoost / LightGBM optimisés par GridSearchCV."
+)
+MLFLOW_EXPERIMENT_TAGS: dict[str, str] = {
+    "project": "student-dropout",
+    "dataset": "students_dropout_academic_success",
+    "task": "binary-classification",
+    "team": "5IABD1",
+}

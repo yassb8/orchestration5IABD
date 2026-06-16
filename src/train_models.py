@@ -37,8 +37,6 @@ from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
 from src.config import (
-    MLFLOW_EXPERIMENT,
-    MLFLOW_TRACKING_URI,
     MODEL_DIR,
     MODEL_NAME,
     RANDOM_STATE,
@@ -46,6 +44,7 @@ from src.config import (
 from src.data import load_data, split
 from src.evaluation import log_shap_summary
 from src.features import build_preprocessor, encode_target
+from src.tracking import log_dataset, setup_experiment
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -242,11 +241,7 @@ def train_all(
     y_test = encode_target(y_test)
 
     if use_mlflow:
-        mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-        mlflow.set_experiment(MLFLOW_EXPERIMENT)
-        logger.info(
-            "Suivi MLflow : %s (experience: %s)", MLFLOW_TRACKING_URI, MLFLOW_EXPERIMENT
-        )
+        setup_experiment()
 
     results = [
         optimize_model(spec, x_train, y_train, x_test, y_test, cv=cv, scoring=scoring)
@@ -262,6 +257,7 @@ def train_all(
             mlflow.log_param("cv", cv)
             mlflow.log_param("scoring", scoring)
             mlflow.set_tag("best_model", best.name)
+            log_dataset(df, context="training", name="students-dropout")
             for result in results:
                 register_as = MODEL_NAME if result is best else None
                 log_run_to_mlflow(result, x_test, y_test, cv, scoring, register_as=register_as)

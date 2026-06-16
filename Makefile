@@ -114,7 +114,7 @@ train-models: ## Compare RF / XGBoost / LightGBM (GridSearchCV) + SHAP (CV=.. SC
 	$(PYTHON) -m src.train_models --cv $(CV) --scoring $(SCORING)
 
 train-optuna: ## Optimise les hyperparamètres avec Optuna (N_TRIALS=.. CV=..)
-	# TODO (S6) : $(PYTHON) -m src.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
+	$(PYTHON) -m src.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
 
 mlflow: ## Démarre le serveur MLflow via Docker Compose (port 5000)
 	# TODO (S5) : docker compose -f docker-compose.yml up -d mlflow
