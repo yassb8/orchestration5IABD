@@ -111,7 +111,7 @@ train: ## Entraîne la baseline LogReg -> models/model.joblib (C=.. MAX_ITER=..)
 	$(PYTHON) -m src.train --c $(C) --max-iter $(MAX_ITER)
 
 train-models: ## Compare RF / XGBoost / LightGBM (GridSearchCV) + SHAP (CV=.. SCORING=..)
-	# TODO (S7) : $(PYTHON) -m src.train_models --cv $(CV) --scoring $(SCORING)
+	$(PYTHON) -m src.train_models --cv $(CV) --scoring $(SCORING)
 
 train-optuna: ## Optimise les hyperparamètres avec Optuna (N_TRIALS=.. CV=..)
 	# TODO (S6) : $(PYTHON) -m src.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
