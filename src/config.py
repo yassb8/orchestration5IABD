@@ -80,6 +80,7 @@ RANDOM_STATE = 42
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT", "student-dropout")
 MODEL_NAME = os.getenv("MODEL_NAME", "dropout-classifier")
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 # Seuils minimaux de validation (make evaluate)
 EVAL_ROC_AUC_MIN: float = float(os.getenv("EVAL_ROC_AUC_MIN", "0.80"))
