@@ -64,7 +64,7 @@ def log_dataset(df: pd.DataFrame, context: str, name: str = "dataset") -> None:
     name : str, optional
         Nom logique du dataset, par defaut "dataset".
     """
-    dataset = mlflow.data.from_pandas(
+    dataset = mlflow.data.from_pandas(  # type: ignore[attr-defined]
         df, source=str(DATA_PATH), targets=TARGET, name=name
     )
     mlflow.log_input(dataset, context=context)
