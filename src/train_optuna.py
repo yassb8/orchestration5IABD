@@ -52,6 +52,17 @@ logger = logging.getLogger(__name__)
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
+# Types non-sklearn embarques dans le Pipeline (XGBoost/LightGBM) que skops
+# doit autoriser pour pouvoir serialiser/charger le modele (mlflow.sklearn.log_model).
+SKOPS_TRUSTED_TYPES = [
+    "numpy.dtype",
+    "collections.OrderedDict",
+    "xgboost.core.Booster",
+    "xgboost.sklearn.XGBClassifier",
+    "lightgbm.basic.Booster",
+    "lightgbm.sklearn.LGBMClassifier",
+]
+
 
 @dataclass
 class ModelSpec:
@@ -232,6 +243,7 @@ def log_family_to_mlflow(
             name="model",
             signature=signature,
             input_example=x_test.iloc[:5],
+            skops_trusted_types=SKOPS_TRUSTED_TYPES,
             registered_model_name=register_as,
         )
 

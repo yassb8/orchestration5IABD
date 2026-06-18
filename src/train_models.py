@@ -55,6 +55,17 @@ warnings.filterwarnings(
     category=UserWarning,
 )
 
+# Types non-sklearn embarques dans le Pipeline (XGBoost/LightGBM) que skops
+# doit autoriser pour pouvoir serialiser/charger le modele (mlflow.sklearn.log_model).
+SKOPS_TRUSTED_TYPES = [
+    "numpy.dtype",
+    "collections.OrderedDict",
+    "xgboost.core.Booster",
+    "xgboost.sklearn.XGBClassifier",
+    "lightgbm.basic.Booster",
+    "lightgbm.sklearn.LGBMClassifier",
+]
+
 
 @dataclass
 class ModelSpec:
@@ -192,6 +203,7 @@ def log_run_to_mlflow(
             signature=signature,
             input_example=x_test.iloc[:5],
             registered_model_name=register_as,
+            skops_trusted_types=SKOPS_TRUSTED_TYPES,
         )
 
         if register_as and model_info.registered_model_version:
