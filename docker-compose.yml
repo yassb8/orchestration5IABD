@@ -1,12 +1,15 @@
 # Stack de prediction de l'abandon scolaire.
 #
-# Services : mlflow (suivi), train (entrainement one-shot, profil "train"), api (FastAPI).
+# Services : mlflow, train (profil "train"), api, frontend, airflow.
 #
 # Commandes :
-#   docker compose up -d mlflow
+#   docker compose up -d mlflow api frontend
 #   docker compose --profile train run --rm train
-#   docker compose up -d api
-#   -> API sur http://localhost:8000, MLflow sur http://localhost:5000
+#   docker compose up -d airflow
+#   -> API       : http://localhost:8000
+#   -> MLflow    : http://localhost:5000
+#   -> Frontend  : http://localhost:8501
+#   -> Airflow   : http://localhost:8080  (admin / voir logs au 1er demarrage)
 
 services:
   mlflow:
@@ -71,6 +74,32 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  airflow:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.airflow
+    command: standalone
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      PYTHONPATH: /opt/airflow
+      API_URL: http://api:8000
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_EXPERIMENT: student-dropout
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./models:/opt/airflow/models
+      - airflow_data:/opt/airflow
+    ports:
+      - "8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   mlflow_data:
   models_data:
+  airflow_data:

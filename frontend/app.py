@@ -13,7 +13,7 @@ import streamlit as st
 API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000")
 
 st.set_page_config(page_title="Prediction abandon scolaire", layout="wide")
-st.title("Prediction de l'abandon scolaire")
+st.title("Prediction de l'abandon scolaire - BOUZOUBAA Yassine")
 st.caption("Modele : Random Forest / XGBoost / LightGBM — Dataset : Student Dropout")
 
 api_url = st.text_input("URL de l'API", value=API_URL)
@@ -145,4 +145,31 @@ with predict_tab:
 
 with history_tab:
     st.subheader("Historique des previsions")
-    st.info("Aucun journal de previsions : ajoutez un endpoint /predictions a l'API (bonus).")
+    try:
+        resp = httpx.get(f"{api_url}/predictions", timeout=5.0)
+        resp.raise_for_status()
+        rows = resp.json()
+    except httpx.HTTPError as exc:
+        st.error(f"Impossible de recuperer l'historique : {exc}")
+        rows = []
+
+    if not rows:
+        st.info("Aucune prediction enregistree pour l'instant.")
+    else:
+        import pandas as pd
+        df = pd.DataFrame(rows)
+        df["label"] = df["prediction"].map({1: "Dropout", 0: "Graduate/Enrolled"})
+        st.metric("Nombre de predictions", len(df))
+        col_h1, col_h2 = st.columns(2)
+        with col_h1:
+            st.metric("Dropouts predits", int((df["prediction"] == 1).sum()))
+        with col_h2:
+            st.metric("Non-dropouts predits", int((df["prediction"] == 0).sum()))
+        st.dataframe(
+            df[["timestamp", "label", "probability"]].rename(columns={
+                "timestamp": "Horodatage",
+                "label": "Prediction",
+                "probability": "Probabilite",
+            }),
+            use_container_width=True,
+        )

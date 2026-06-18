@@ -34,7 +34,7 @@ RESET  := $(shell printf '\033[0m')
 
 .PHONY: help \
         check-uv check-venv install sync lock reset-env doctor \
-        data train train-models train-optuna evaluate mlflow api frontend \
+        data train train-models train-optuna evaluate mlflow api frontend airflow \
         docker-build docker-run docker-up docker-down \
         lint format type test check
 
@@ -138,6 +138,9 @@ docker-build: ## Construit l'image d'entraînement
 
 docker-run: ## Lance l'entraînement dans un conteneur
 	docker run --rm -v "$(CURDIR)/models:/app/models" dropout-train
+
+airflow: ## Démarre Airflow (port 8080) — nécessite api healthy
+	docker compose up -d --build airflow
 
 docker-up: ## Démarre la stack complète (mlflow + api + frontend)
 	docker compose up -d --build mlflow api frontend
