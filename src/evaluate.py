@@ -24,7 +24,6 @@ from mlflow.exceptions import MlflowException
 from mlflow.models import MetricThreshold
 
 from src.config import (
-    DATA_PATH,
     EVAL_F1_MIN,
     EVAL_ROC_AUC_MIN,
     MODEL_NAME,
