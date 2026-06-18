@@ -96,7 +96,6 @@ doctor: check-uv check-venv ## Diagnostique l'environnement de travail
 # ==============================================================================
 
 data: ## Inspecte et valide le dataset brut (data/raw/)
-	# TODO (S0) : compléter src/config.py avec les colonnes du dataset
 	@echo "$(YELLOW)>> Inspection du dataset...$(RESET)"
 	@$(PYTHON) -c "\
 import pandas as pd; \
@@ -154,15 +153,15 @@ docker-down: ## Arrête et supprime les conteneurs (conserve les volumes)
 # ==============================================================================
 
 lint: ## Vérifie le style (ruff)
-	# TODO : $(RUN) ruff check src
+	$(RUN) ruff check src
 
 format: ## Formate le code (ruff)
-	# TODO : $(RUN) ruff format src
+	$(RUN) ruff format src
 
 type: ## Vérifie les types (mypy)
-	# TODO : $(RUN) mypy src
+	$(RUN) mypy src
 
 test: ## Lance les tests (pytest)
-	# TODO : $(RUN) pytest
+	$(RUN) pytest
 
 check: lint type test ## Workflow qualité complet (lint + types + tests)

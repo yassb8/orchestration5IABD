@@ -24,7 +24,7 @@ jobs:
   # 1. Qualite : lint + types + tests
   # ---------------------------------------------------------------------------
   quality:
-    name: Qualite (lint + types)
+    name: Qualite (lint + types + tests)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du depot
@@ -44,6 +44,9 @@ jobs:
 
       - name: Types (mypy)
         run: uv run mypy src
+
+      - name: Tests (pytest)
+        run: uv run pytest --tb=short
 
   # ---------------------------------------------------------------------------
   # 2. Entrainement : baseline LogReg -> models/model.joblib
