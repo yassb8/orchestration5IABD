@@ -120,7 +120,7 @@ evaluate: ## Evalue le meilleur modele du registry et applique la porte qualite
 	$(PYTHON) -m src.evaluate
 
 mlflow: ## Démarre le serveur MLflow via Docker Compose (port 5000)
-	# TODO (S5) : docker compose -f docker-compose.yml up -d mlflow
+	docker compose up -d mlflow
 
 api: ## Lance l'API FastAPI en rechargement auto (API_HOST / API_PORT)
 	$(RUN) uvicorn src.api:app --reload --host $(API_HOST) --port $(API_PORT)
@@ -134,16 +134,16 @@ frontend: ## Lance le frontend Streamlit (FRONTEND_PORT / API_URL)
 # ==============================================================================
 
 docker-build: ## Construit l'image d'entraînement
-	# TODO (S8) : docker build -f docker/Dockerfile.train -t dropout-train .
+	docker build -f docker/Dockerfile.train -t dropout-train .
 
 docker-run: ## Lance l'entraînement dans un conteneur
-	# TODO (S8) : docker run --rm -v "$(CURDIR)/models:/app/models" dropout-train
+	docker run --rm -v "$(CURDIR)/models:/app/models" dropout-train
 
-docker-up: ## Démarre la stack complète (mlflow, api, frontend)
-	# TODO (S14) : docker compose -f docker-compose.yml up -d --build mlflow api frontend
+docker-up: ## Démarre la stack complète (mlflow + api)
+	docker compose up -d --build mlflow api
 
 docker-down: ## Arrête et supprime les conteneurs (conserve les volumes)
-	# TODO (S14) : docker compose -f docker-compose.yml down
+	docker compose down
 
 
 # ==============================================================================

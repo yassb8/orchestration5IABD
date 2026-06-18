@@ -1,0 +1,63 @@
+# Stack de prediction de l'abandon scolaire.
+#
+# Services : mlflow (suivi), train (entrainement one-shot, profil "train"), api (FastAPI).
+#
+# Commandes :
+#   docker compose up -d mlflow
+#   docker compose --profile train run --rm train
+#   docker compose up -d api
+#   -> API sur http://localhost:8000, MLflow sur http://localhost:5000
+
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.13.0
+    command: >
+      mlflow server
+      --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts
+      --serve-artifacts
+      --allowed-hosts "*"
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    restart: unless-stopped
+
+  train:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.train
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_EXPERIMENT: student-dropout
+      MODEL_NAME: dropout-classifier
+    depends_on:
+      - mlflow
+    volumes:
+      - models_data:/app/models
+    profiles:
+      - train
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - models_data:/app/models:ro
+    environment:
+      MODEL_VERSION: "latest"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      - mlflow
+    restart: unless-stopped
+
+volumes:
+  mlflow_data:
+  models_data:

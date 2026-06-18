@@ -1,0 +1,21 @@
+# Image d'entrainement — prediction de l'abandon scolaire.
+# Build : docker build -f docker/Dockerfile.train -t dropout-train .
+# Run   : docker run --rm -v "$PWD/models:/app/models" dropout-train
+
+FROM python:3.13-slim
+ENV PYTHONUNBUFFERED=1 PYTHONPATH=/app
+WORKDIR /app
+
+# libgomp1 : runtime OpenMP requis par LightGBM
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dependances d'abord pour profiter du cache de layers
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir .
+
+# Code source et donnees
+COPY src/ ./src/
+COPY data/ ./data/
+
+CMD ["python", "-m", "src.train"]
