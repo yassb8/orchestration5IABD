@@ -1,4 +1,4 @@
-"""Tests de l'API FastAPI (sans modele entraine — mock joblib.load)."""
+"""Tests de l'API FastAPI (sans modele entraine — mock complet du lifespan)."""
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -52,10 +52,22 @@ def client():
     mock_model.predict_proba.return_value = np.array([[0.3, 0.7]])
     mock_model.predict.return_value = np.array([1])
 
-    with patch("joblib.load", return_value=mock_model):
+    # Mocker MODEL_DIR / "model.joblib" pour que .exists() renvoie True
+    mock_model_path = MagicMock()
+    mock_model_path.exists.return_value = True
+    mock_model_dir = MagicMock()
+    mock_model_dir.__truediv__ = MagicMock(return_value=mock_model_path)
+
+    import src.api as api_module
+    api_module.predictions_log.clear()
+
+    with patch("src.api.MODEL_DIR", mock_model_dir), \
+         patch("src.api.joblib.load", return_value=mock_model):
         from src.api import app
         with TestClient(app) as c:
             yield c
+
+    api_module.predictions_log.clear()
 
 
 def test_health(client):
