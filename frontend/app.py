@@ -51,6 +51,8 @@ st.markdown(
     }
     .hero h1 { margin: 0; font-size: 2rem; font-weight: 700; }
     .hero p  { margin: 0.3rem 0 0; opacity: .75; font-size: .95rem; }
+    .hero a  { color: #90caf9; text-decoration: none; font-weight: 600; }
+    .hero a:hover { text-decoration: underline; }
     .tool-links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .tool-link {
         display: inline-flex; align-items: center; gap: 6px;
@@ -88,7 +90,9 @@ st.markdown(
     """
     <div class="hero">
         <h1>🎓 Student Dropout Prediction</h1>
-        <p>Pipeline MLOps · ESGI 5IABD1 · BOUZOUBAA Yassine</p>
+        <p>Pipeline MLOps · ESGI 5IABD1 · BOUZOUBAA Yassine ·
+            <a href="https://github.com/yassb8/orchestration5IABD" target="_blank">🔗 GitHub</a>
+        </p>
     </div>
     """,
     unsafe_allow_html=True,
