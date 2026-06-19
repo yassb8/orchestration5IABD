@@ -61,7 +61,7 @@ def task_check_quality(**context) -> None:
 with DAG(
     dag_id="model_retraining",
     description="Valide les donnees, reentraine le modele et controle sa qualite",
-    schedule="0 3 * * 1",  # tous les lundis a 3h
+    schedule="0 3 * * *",  # tous les jours a 3h
     start_date=datetime(2024, 1, 1),
     catchup=False,
     default_args=default_args,

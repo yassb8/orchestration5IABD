@@ -49,10 +49,10 @@ def task_send_predictions(**context) -> None:
 
 with DAG(
     dag_id="daily_predictions",
-    description="Envoie 20 previsions par jour a l'API (trafic simule)",
+    description="Envoie 20 previsions toutes les 4 heures a l'API (trafic simule)",
     default_args=default_args,
     start_date=datetime(2024, 1, 1),
-    schedule="0 10 * * *",  # tous les jours a 10h
+    schedule="0 */4 * * *",  # toutes les 4 heures
     catchup=False,
     tags=["classification", "predictions"],
 ) as dag:
