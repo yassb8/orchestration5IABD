@@ -98,11 +98,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-with st.sidebar:
-    st.markdown("### ⚙️ Parametres avances")
-    st.caption("A utiliser seulement si tu sais ce que tu fais — les valeurs par defaut conviennent dans 99% des cas.")
-    api_url = st.text_input("URL interne API (serveur)", value=API_URL)
-    mlflow_url = st.text_input("URL interne MLflow (serveur)", value=MLFLOW_URL)
+api_url = API_URL
+mlflow_url = MLFLOW_URL
 
 st.markdown(
     """
