@@ -45,46 +45,64 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    #MainMenu, footer { visibility: hidden; }
+
     .hero {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        border-radius: 16px; padding: 2rem 2.5rem; margin-bottom: 1.5rem; color: white;
+        border-radius: 18px; padding: 2.2rem 2.6rem; margin-bottom: 1.5rem; color: white;
+        box-shadow: 0 8px 24px rgba(15, 52, 96, 0.35);
     }
-    .hero h1 { margin: 0; font-size: 2rem; font-weight: 700; }
-    .hero p  { margin: 0.3rem 0 0; opacity: .75; font-size: .95rem; }
+    .hero h1 { margin: 0; font-size: 2.1rem; font-weight: 800; letter-spacing: -.02em; }
+    .hero p  { margin: 0.4rem 0 0; opacity: .8; font-size: .95rem; }
     .hero a  { color: #90caf9; text-decoration: none; font-weight: 600; }
     .hero a:hover { text-decoration: underline; }
-    .tool-links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+
+    .tool-links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.8rem; }
     .tool-link {
         display: inline-flex; align-items: center; gap: 6px;
-        padding: 6px 14px; border-radius: 20px; font-size: .85rem;
-        font-weight: 600; text-decoration: none; transition: opacity .2s;
+        padding: 7px 16px; border-radius: 20px; font-size: .85rem;
+        font-weight: 600; text-decoration: none;
+        transition: transform .15s ease, box-shadow .15s ease;
     }
-    .tool-link:hover { opacity: .8; }
+    .tool-link:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.12); }
     .link-api     { background: #e8f4fd; color: #1565c0; border: 1.5px solid #90caf9; }
     .link-mlflow  { background: #fce4ec; color: #b71c1c; border: 1.5px solid #ef9a9a; }
     .link-airflow { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #a5d6a7; }
+
     .result-card {
-        border-radius: 12px; padding: 1.4rem 1.8rem;
-        margin-top: 1rem; font-size: 1.05rem; font-weight: 600;
+        border-radius: 14px; padding: 1.5rem 1.9rem;
+        margin-top: 1rem; font-size: 1.1rem; font-weight: 700;
+        box-shadow: 0 4px 14px rgba(0,0,0,.06);
     }
-    .result-dropout  { background: #ffebee; border-left: 5px solid #e53935; color: #b71c1c; }
-    .result-graduate { background: #e8f5e9; border-left: 5px solid #43a047; color: #1b5e20; }
+    .result-dropout  { background: #ffebee; border-left: 6px solid #e53935; color: #b71c1c; }
+    .result-graduate { background: #e8f5e9; border-left: 6px solid #43a047; color: #1b5e20; }
     .stProgress > div > div { background: linear-gradient(90deg, #43a047, #e53935); }
+
     .section-title {
-        font-weight: 700; font-size: .9rem; letter-spacing: .05em;
+        font-weight: 700; font-size: .85rem; letter-spacing: .06em;
         text-transform: uppercase; color: #5c6bc0;
-        border-bottom: 2px solid #e8eaf6; padding-bottom: 4px; margin-bottom: 8px;
+        border-bottom: 2px solid #e8eaf6; padding-bottom: 5px; margin: 4px 0 10px;
     }
     .feat-badge {
         display: inline-block; background: #e8eaf6; color: #3949ab;
-        border-radius: 6px; padding: 2px 8px; margin: 2px; font-size: .8rem;
+        border-radius: 8px; padding: 3px 10px; margin: 3px; font-size: .8rem; font-weight: 500;
     }
+    .status-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px; border-radius: 20px; font-size: .8rem; font-weight: 600;
+    }
+    .status-ok   { background: #e8f5e9; color: #1b5e20; }
+    .status-fail { background: #ffebee; color: #b71c1c; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-api_url = st.sidebar.text_input("URL de l'API", value=API_URL)
+with st.sidebar:
+    st.markdown("### ⚙️ Parametres avances")
+    st.caption("A utiliser seulement si tu sais ce que tu fais — les valeurs par defaut conviennent dans 99% des cas.")
+    api_url = st.text_input("URL interne API (serveur)", value=API_URL)
+    mlflow_url = st.text_input("URL interne MLflow (serveur)", value=MLFLOW_URL)
 
 st.markdown(
     """
@@ -266,7 +284,7 @@ with eval_tab:
 
     try:
         exp_resp = httpx.get(
-            f"{MLFLOW_URL}/api/2.0/mlflow/experiments/search",
+            f"{mlflow_url}/api/2.0/mlflow/experiments/search",
             params={"max_results": 10},
             timeout=5.0,
         )
@@ -281,7 +299,7 @@ with eval_tab:
         exp_ids = [e["experiment_id"] for e in eval_experiments]
         try:
             search_resp = httpx.post(
-                f"{MLFLOW_URL}/api/2.0/mlflow/runs/search",
+                f"{mlflow_url}/api/2.0/mlflow/runs/search",
                 json={
                     "experiment_ids": exp_ids,
                     "filter": "tags.`mlflow.runName` = 'evaluate'",
@@ -358,7 +376,7 @@ with eval_tab:
         st.markdown("##### Artefacts (matrice de confusion, courbes ROC / precision-rappel)")
         try:
             art_resp = httpx.get(
-                f"{MLFLOW_URL}/api/2.0/mlflow/artifacts/list",
+                f"{mlflow_url}/api/2.0/mlflow/artifacts/list",
                 params={"run_id": run_id},
                 timeout=5.0,
             )
@@ -376,7 +394,7 @@ with eval_tab:
             for i, f in enumerate(image_files):
                 try:
                     img_resp = httpx.get(
-                        f"{MLFLOW_URL}/get-artifact",
+                        f"{mlflow_url}/get-artifact",
                         params={"path": f["path"], "run_id": run_id},
                         timeout=10.0,
                     )
@@ -466,11 +484,7 @@ et a la fin du premier et second semestre.
 # ── Artefacts MLflow ────────────────────────────────────────────────────────────
 with artefact_tab:
     st.markdown("#### Metriques des runs MLflow")
-
-    mlflow_url = st.text_input("URL MLflow", value=MLFLOW_URL, key="mlflow_url")
-    col_btn, _ = st.columns([1, 5])
-    with col_btn:
-        load_runs = st.button("🔄 Charger les runs")
+    st.button("🔄 Charger les runs")
 
     try:
         # Recupere les experiences
@@ -574,4 +588,4 @@ with artefact_tab:
                 hide_index=True,
             )
 
-            st.caption(f"Source : {mlflow_url}")
+            st.caption(f"Source : [{MLFLOW_PUBLIC_URL}]({MLFLOW_PUBLIC_URL})")
